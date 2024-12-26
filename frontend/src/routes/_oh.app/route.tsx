@@ -2,6 +2,10 @@ import { useDisclosure } from "@nextui-org/react";
 import React from "react";
 import { Outlet } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  ConversationProvider,
+  useConversation,
+} from "#/context/conversation-context";
 import { Controls } from "#/components/features/controls/controls";
 import { RootState } from "#/store";
 import { clearMessages } from "#/state/chat-slice";
@@ -10,6 +14,7 @@ import { useEffectOnce } from "#/hooks/use-effect-once";
 import CodeIcon from "#/icons/code.svg?react";
 import GlobeIcon from "#/icons/globe.svg?react";
 import ListIcon from "#/icons/list-type-number.svg?react";
+import InfoIcon from "#/icons/info.svg?react";
 import { clearJupyter } from "#/state/jupyter-slice";
 import { FilesProvider } from "#/context/files";
 import { ChatInterface } from "../../components/features/chat/chat-interface";
@@ -22,10 +27,12 @@ import { useConversationConfig } from "#/hooks/query/use-conversation-config";
 import { Container } from "#/components/layout/container";
 import Security from "#/components/shared/modals/security/security";
 import { CountBadge } from "#/components/layout/count-badge";
+import { TerminalStatusLabel } from "#/components/features/terminal/terminal-status-label";
 
-function App() {
-  const { token, gitHubToken } = useAuth();
+function AppContent() {
+  const { gitHubToken } = useAuth();
   const { settings } = useUserPrefs();
+  const { conversationId } = useConversation();
 
   const dispatch = useDispatch();
   useConversationConfig();
@@ -41,8 +48,8 @@ function App() {
   });
 
   const secrets = React.useMemo(
-    () => [gitHubToken, token].filter((secret) => secret !== null),
-    [gitHubToken, token],
+    () => [gitHubToken].filter((secret) => secret !== null),
+    [gitHubToken],
   );
 
   const Terminal = React.useMemo(
@@ -63,13 +70,7 @@ function App() {
   } = useDisclosure();
 
   return (
-    <WsClientProvider
-      enabled
-      token={token}
-      ghToken={gitHubToken}
-      selectedRepository={selectedRepository}
-      settings={settings}
-    >
+    <WsClientProvider ghToken={gitHubToken} conversationId={conversationId}>
       <EventHandler>
         <div className="flex flex-col h-full gap-3">
           <div className="flex h-full overflow-auto gap-3">
@@ -93,6 +94,11 @@ function App() {
                     to: "browser",
                     icon: <GlobeIcon />,
                   },
+                  {
+                    label: "Instructions",
+                    to: "instructions",
+                    icon: <InfoIcon />,
+                  },
                 ]}
               >
                 <FilesProvider>
@@ -101,7 +107,10 @@ function App() {
               </Container>
               {/* Terminal uses some API that is not compatible in a server-environment. For this reason, we lazy load it to ensure
                * that it loads only in the client-side. */}
-              <Container className="h-1/3 overflow-scroll" label="Terminal">
+              <Container
+                className="h-1/3 overflow-scroll"
+                label={<TerminalStatusLabel />}
+              >
                 <React.Suspense fallback={<div className="h-full" />}>
                   <Terminal secrets={secrets} />
                 </React.Suspense>
@@ -124,6 +133,14 @@ function App() {
         </div>
       </EventHandler>
     </WsClientProvider>
+  );
+}
+
+function App() {
+  return (
+    <ConversationProvider>
+      <AppContent />
+    </ConversationProvider>
   );
 }
 

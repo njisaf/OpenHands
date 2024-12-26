@@ -1,9 +1,9 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "test-utils";
+import { renderWithProviders } from "../../test-utils";
 import { describe, it, expect, vi, Mock, afterEach } from "vitest";
 import toast from "#/utils/toast";
-import AgentState from "#/types/agent-state";
+import { AgentState } from "#/types/agent-state";
 import OpenHands from "#/api/open-hands";
 import { FileExplorer } from "#/components/features/file-explorer/file-explorer";
 

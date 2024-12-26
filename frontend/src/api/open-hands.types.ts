@@ -43,6 +43,7 @@ export interface Feedback {
 
 export interface GetConfigResponse {
   APP_MODE: "saas" | "oss";
+  APP_SLUG?: string;
   GITHUB_CLIENT_ID: string;
   POSTHOG_CLIENT_KEY: string;
 }
@@ -55,4 +56,30 @@ export interface GetVSCodeUrlResponse {
 export interface AuthenticateResponse {
   message?: string;
   error?: string;
+}
+
+export interface RepoInstructions {
+  instructions: string;
+  tutorialUrl: string;
+  hasInstructions: boolean;
+}
+
+export interface MicroAgent {
+  id: string;
+  name: string;
+  instructions: string;
+  isPermanent: boolean;
+  createdAt: string;
+}
+
+export interface CreateInstructionsPRResponse {
+  pullRequestUrl: string;
+  success: boolean;
+  message: string;
+}
+
+export interface AddMicroAgentResponse {
+  agentId: string;
+  success: boolean;
+  message: string;
 }

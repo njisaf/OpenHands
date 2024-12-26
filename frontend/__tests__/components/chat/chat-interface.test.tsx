@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "test-utils";
+import { renderWithProviders } from "../../test-utils";
 import { addUserMessage } from "#/state/chat-slice";
 import { SUGGESTIONS } from "#/utils/suggestions";
 import * as ChatSlice from "#/state/chat-slice";
@@ -20,7 +20,7 @@ describe("Empty state", () => {
   const { useWsClient: useWsClientMock } = vi.hoisted(() => ({
     useWsClient: vi.fn(() => ({
       send: sendMock,
-      status: WsClientProviderStatus.ACTIVE,
+      status: WsClientProviderStatus.CONNECTED,
       isLoadingMessages: false,
     })),
   }));
@@ -90,7 +90,7 @@ describe("Empty state", () => {
       // this is to test that the message is in the UI before the socket is called
       useWsClientMock.mockImplementation(() => ({
         send: sendMock,
-        status: WsClientProviderStatus.ACTIVE,
+        status: WsClientProviderStatus.CONNECTED,
         isLoadingMessages: false,
       }));
       const addUserMessageSpy = vi.spyOn(ChatSlice, "addUserMessage");
@@ -120,7 +120,7 @@ describe("Empty state", () => {
     async () => {
       useWsClientMock.mockImplementation(() => ({
         send: sendMock,
-        status: WsClientProviderStatus.ACTIVE,
+        status: WsClientProviderStatus.CONNECTED,
         isLoadingMessages: false,
       }));
       const user = userEvent.setup();
@@ -138,7 +138,7 @@ describe("Empty state", () => {
 
       useWsClientMock.mockImplementation(() => ({
         send: sendMock,
-        status: WsClientProviderStatus.ACTIVE,
+        status: WsClientProviderStatus.CONNECTED,
         isLoadingMessages: false,
       }));
       rerender(<ChatInterface />);

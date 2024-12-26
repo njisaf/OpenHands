@@ -29,6 +29,12 @@ export default defineConfig(({ mode }) => {
       viteTsconfigPaths(),
       svgr(),
     ],
+    resolve: {
+      alias: [
+        { find: '@', replacement: '/src' },
+        { find: '#', replacement: '/src' },
+      ],
+    },
     server: {
       port: FE_PORT,
       proxy: {
@@ -67,5 +73,6 @@ export default defineConfig(({ mode }) => {
         include: ["src/**/*.{ts,tsx}"],
       },
     },
+
   };
 });

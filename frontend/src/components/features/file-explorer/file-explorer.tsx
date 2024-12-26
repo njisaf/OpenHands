@@ -1,11 +1,11 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import AgentState from "#/types/agent-state";
+import { RUNTIME_INACTIVE_STATES } from "#/types/agent-state";
 import { ExplorerTree } from "#/components/features/file-explorer/explorer-tree";
 import toast from "#/utils/toast";
 import { RootState } from "#/store";
-import { I18nKey } from "#/i18n/declaration";
+import { I18nKey } from "@/i18n/declaration";
 import { useListFiles } from "#/hooks/query/use-list-files";
 import { FileUploadSuccessResponse } from "#/api/open-hands.types";
 import { useUploadFiles } from "#/hooks/mutation/use-upload-files";
@@ -30,12 +30,11 @@ export function FileExplorer({ isOpen, onToggle }: FileExplorerProps) {
 
   const { curAgentState } = useSelector((state: RootState) => state.agent);
 
-  const agentIsReady =
-    curAgentState !== AgentState.INIT && curAgentState !== AgentState.LOADING;
-
   const { data: paths, refetch, error } = useListFiles();
   const { mutate: uploadFiles } = useUploadFiles();
-  const { data: vscodeUrl } = useVSCodeUrl({ enabled: agentIsReady });
+  const { data: vscodeUrl } = useVSCodeUrl({
+    enabled: !RUNTIME_INACTIVE_STATES.includes(curAgentState),
+  });
 
   const handleOpenVSCode = () => {
     if (vscodeUrl?.vscode_url) {
@@ -92,10 +91,7 @@ export function FileExplorer({ isOpen, onToggle }: FileExplorerProps) {
   };
 
   const refreshWorkspace = () => {
-    if (
-      curAgentState !== AgentState.LOADING &&
-      curAgentState !== AgentState.STOPPED
-    ) {
+    if (!RUNTIME_INACTIVE_STATES.includes(curAgentState)) {
       refetch();
     }
   };
@@ -166,7 +162,7 @@ export function FileExplorer({ isOpen, onToggle }: FileExplorerProps) {
           {isOpen && (
             <OpenVSCodeButton
               onClick={handleOpenVSCode}
-              isDisabled={!agentIsReady}
+              isDisabled={RUNTIME_INACTIVE_STATES.includes(curAgentState)}
             />
           )}
         </div>
